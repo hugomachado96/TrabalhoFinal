@@ -129,11 +129,13 @@
   <ItemGroup>
     <ClInclude Include="cliente.h" />
     <ClInclude Include="gestores.h" />
+    <ClInclude Include="grafo.h" />
     <ClInclude Include="meio.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cliente.c" />
     <ClCompile Include="gestores.c" />
+    <ClCompile Include="grafo.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="meio.c" />
   </ItemGroup>

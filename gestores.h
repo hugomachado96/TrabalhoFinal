@@ -1,4 +1,11 @@
+#ifndef _GESTORES_H_
+#define _GESTORES_H_
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "cliente.h"
+#include "meio.h"
 
 typedef struct gestor {
 	int codigo;
@@ -17,3 +24,7 @@ int principalGestores(Gestores* comeco);
 int loginGestores(Gestores* comeco);
 Gestores* Menu(Gestores* inicio, Clientes* comeco, Meio* inicial);
 Clientes* readDataFromFile();
+int menuGestoresInicial();
+int menuGrafos();
+
+#endif

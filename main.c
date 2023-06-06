@@ -6,6 +6,12 @@
 #include <locale.h>
 
 #include "gestores.h"
+#include "cliente.h"
+#include "meio.h"
+#include "grafo.h"
+
+
+
 
 
 int menuPrincipal() {
@@ -20,13 +26,15 @@ int main() {
 	Gestores* gestores = NULL;
 	Clientes* cliente = NULL;
 	Aluguer* alugar = NULL;
-	int op;
+	graph** grafo = createAGraph(6, 6);
+	node* no = malloc(sizeof(node));
+	//int op;
 
 	meios = lerMeios();
 	gestores = lerFicheiro();
 	cliente = readDataFromFile();
 
-	do {
+	/*do {
 		op = menuPrincipal();
 		switch (op) {
 		case 1:
@@ -36,12 +44,14 @@ int main() {
 			break;
 		case 2:
 			system("cls");
-			cliente = menuInicial(cliente, meios, alugar);
+			cliente = menuInicial(cliente, meios, alugar, grafo, vertice, aresta);
 			system("PAUSE");
 			break;
 		default:
 			break;
 		}
-	} while (op != 0);
+	} while (op != 0);*/
+	addEdge(grafo, "Braga", "Famalicao", 5, meios, cliente);
+	system("PAUSE");
 	return 0;
 }

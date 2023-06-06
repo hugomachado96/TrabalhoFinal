@@ -24,6 +24,9 @@
     <ClInclude Include="gestores.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
+    <ClInclude Include="grafo.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="gestores.c">
@@ -36,6 +39,9 @@
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
     <ClCompile Include="main.c">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
+    <ClCompile Include="grafo.c">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
   </ItemGroup>

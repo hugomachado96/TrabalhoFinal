@@ -52,7 +52,7 @@ Clientes* novoCliente(Clientes* comeco, char name[], int contr, char adress[], c
 
 			// Percorre a lista procurando o local de inserção
 			Clientes* atual = comeco;
-			while (atual->next != NULL && contr > atual->next->contribuinte) {
+			while (atual->next != NULL && contr > atual->contribuinte) {
 				atual = atual->next;
 			}
 
@@ -84,7 +84,7 @@ int menu1() {
 	return choice;
 }
 
-Clientes* menuInicial(Clientes* inicio, Meio* inicial, Aluguer* comeco) {
+Clientes* menuInicial(Clientes* inicio, Meio* inicial, Aluguer* comeco, struct Grafo* grafo, struct vertices* vertices) {
 	int op, contr, pog;
 	char name[50], adress[100], uti[50], pass[12];
 	do {
@@ -108,10 +108,14 @@ Clientes* menuInicial(Clientes* inicio, Meio* inicial, Aluguer* comeco) {
 			inicio = novoCliente(inicio, name, contr, adress, uti, pass, 0);
 			guardarClientes(inicio);
 			system("PAUSE");
+			break;
 		case 2:
 			system("cls");
 			pog = loginClientes(inicio);
-			if (pog == 1)inicio = menuAcesso(inicio, inicial, comeco);
+			if (pog == 1) {
+				//adicionarLocalizacaoCliente(grafo, inicio, vertices);
+				inicio = menuAcesso(inicio, inicial, comeco);
+			}
 			else if (pog == 0) printf("Não foi possivel fazer login.");
 			system("PAUSE");
 			break;
@@ -138,8 +142,9 @@ int menu2(Clientes* comeco) {
 	printf("Bem vindo %s!\n", comeco->nome);
 	printf("1-Adicionar Saldo\n");
 	printf("2-Ver meios disponiveis\n");
-	printf("3-Aluguer\n");
-	printf("0-Voltar\n");
+	printf("3-Ver os meios numa localizacao.\n");
+	printf("4-Aluguer\n");
+	printf("0-Log Out\n");
 	scanf("%i", &choice);
 
 	return choice;
@@ -180,32 +185,32 @@ int menuAluger(Clientes* comeco, Meio* inicio, Aluguer* inicial) {
 	Aluguer* aux = NULL;
 	pog = menu3();
 	switch (pog) {
-	case 1:
-		system("cls");
-		meiosDisponiveis(inicio);
-		system("PAUSE");
-		break;
-	case 2:
-		system("cls");
-		meiosDisponiveis(inicio);
-		printf("\nCodigo do meio que quer usar: ");
-		scanf("%d", &cod);
-		printf("Quanto tempo vai usar a esse meio: ");
-		scanf("%f", &time);
-		aux = criarAluguer(aux, cod, time, comeco, inicio);
-		guardarAluguer(aux);
-		printf("Aluguer realizado com sucesso!\n");
-		system("PAUSE");
-		break;
-	case 3:
-		system("cls");
-		printf("Qual é o codigo do veiculo que quer devolver: ");
-		scanf("%d", &cod);
-		inicio = desalugar(inicio, cod);
-		system("PAUSE");
-		break;
-	default:
-		break;
+		case 1:
+			system("cls");
+			meiosDisponiveis(inicio);
+			system("PAUSE");
+			break;
+		case 2:
+			system("cls");
+			meiosDisponiveis(inicio);
+			printf("\nCodigo do meio que quer usar: ");
+			scanf("%d", &cod);
+			printf("Quanto tempo vai usar a esse meio: ");
+			scanf("%f", &time);
+			aux = criarAluguer(aux, cod, time, comeco, inicio);
+			guardarAluguer(aux);
+			printf("Aluguer realizado com sucesso!\n");
+			system("PAUSE");
+			break;
+		case 3:
+			system("cls");
+			printf("Qual é o codigo do veiculo que quer devolver: ");
+			scanf("%d", &cod);
+			inicio = desalugar(inicio, cod);
+			system("PAUSE");
+			break;
+		default:
+			break;
 	}
 	return 0;
 }
@@ -253,6 +258,20 @@ int haCliente(Clientes* comeco, int cod) {
 }
 
 int guardarAluguer(Aluguer* inicio) {
+	FILE* fp;
+	fp = fopen("aluguer.txt", "w");
+	if (fp != NULL)
+	{
+		Aluguer* aux = inicio;
+		while (aux != NULL)
+		{
+			fprintf(fp, "%s;%i;%f;%f\n", aux->nome,aux->codigo, aux->custo, aux->tempo);
+			aux = aux->next;
+		}
+		fclose(fp);
+		return(1);
+	}
+	else return(0);
 	return 0;
 }
 
@@ -262,8 +281,10 @@ int loginClientes(Clientes* comeco) {
 	getchar();
 	printf("\nNome de Identificação: ");
 	fgets(codigo, 50, stdin);
+	codigo[strcspn(codigo, "\n")] = '\0';
 	printf("Password: ");
 	fgets(pass, 12, stdin);
+	pass[strcspn(pass, "\n")] = '\0';
 
 	Clientes* temp = comeco;
 	while (temp != NULL) {
@@ -278,10 +299,46 @@ int loginClientes(Clientes* comeco) {
 	return 0;
 }
 
-int menuAcesso(Clientes* cliente, Meio* meios)
+int menuAcesso(Clientes* cliente, Meio* meios, Aluguer* inicio)
 {
+	int op, retorno;
 	while (cliente != NULL) {
-
+		do{
+			op = menu2(cliente);
+			switch(op){
+				case 1:
+					system("cls");
+					retorno=adicionarSaldo(cliente);
+					if (retorno == 1) printf("Saldo adicionado com sucesso!");
+					else if (retorno == 0) printf("O nome de utilizador nao foi encontrado!");
+					system("PAUSE");
+					break;
+				case 2:
+					system("cls");
+					meiosDisponiveis(meios);
+					system("PAUSE");
+					break;
+				case 3:
+					system("cls");
+					listarMeiosPorLocalizacao(meios);
+					break;
+				case 4:
+					system("cls");
+					menuAluger(cliente, meios, inicio);
+					break;
+				case 0:
+					system("cls");
+					guardarClientes(cliente);
+					printf("Volta Sempre!");
+					system("PAUSE");
+					break;
+				default:
+					system("cls");
+					printf("Opcao Invalida! Escolhe uma das opções");
+					break;
+					return 0;
+				}
+		}while (op != 0);
 	}
 	return 0;
 }
@@ -324,40 +381,7 @@ void listarClientes(Clientes* comeco) {
  * @return devolve .
  */
 
- /*Clientes* clientesExistentes() {
-	 FILE* arquivo = fopen("clientes.txt", "r");
-	 if (arquivo == NULL) {
-		 printf("Não encontramos a base de dados\n");
-		 return NULL;
-	 }
-
-	 Clientes* inicio = NULL;
-	 Clientes* novoCliente;
-	 Clientes* ultimoCliente = NULL;
-
-	 while (!feof(arquivo)) {
-		 novoCliente = (Clientes*)malloc(sizeof(Clientes));
-		 if (sscanf(arquivo, "%[^;];%i;%[^;];%[^;];%[^;];%f", novoCliente->nome, &novoCliente->contribuinte, novoCliente->utilizador, novoCliente->password, novoCliente->morada, &novoCliente->saldo) == 6) {
-			 novoCliente->next = NULL;
-
-			 if (inicio == NULL) {
-				 inicio = novoCliente;
-			 }
-			 else {
-				 ultimoCliente->next = novoCliente;
-			 }
-
-			 ultimoCliente = novoCliente;
-		 }
-		 else {
-			 free(novoCliente);
-		 }
-	 }
-
-	 fclose(arquivo);
-
-	 return inicio;
- }*/
+ 
 
 Clientes* readDataFromFile() {
 	FILE* file = fopen("clientes.txt", "r");
@@ -400,3 +424,81 @@ Clientes* readDataFromFile() {
 	fclose(file);
 	return inicio;
 }
+
+int adicionarSaldo(Clientes* inicio){
+	float saldo;
+	char utilizador[50];
+	printf("Introduza o seu nome de utilizador novamente:");
+	getchar();
+	fgets(utilizador, 50, stdin);
+	utilizador[strcspn(utilizador, "\n")] = '\0';
+	Clientes* temp=inicio;
+	while (temp!= NULL){
+		if(strcmp(temp->utilizador, utilizador) == 0){
+			printf("Quanto saldo queres adicionar a tua conta");
+			scanf("%f", &saldo);
+			temp->saldo=saldo;
+			return 1;
+		}
+		temp = temp->next;
+	}
+	return 0;
+}
+
+/*int adicionarLocalizacaoCliente(struct Grafo* g, Clientes* cliente, struct Vertice* verticeSelecionado) {
+	printf("Selecione a localizacao do cliente:\n");
+	imprimirVertices(g);
+
+	int opcao;
+	printf("Opcao: ");
+	scanf("%d", &opcao);
+
+	verticeSelecionado = procurarVertice(g, opcao);
+	if (verticeSelecionado == NULL) {
+		printf("Localizacao nao encontrada!\n");
+		return 0;
+	}
+	
+	strcpy(cliente->localizacao, verticeSelecionado->localizacao);
+	printf("Localizacao do cliente adicionada com sucesso!\n");
+	return 1;
+}
+*/
+Clientes* searchLocationClient(Clientes* head, const char* location) {
+	Clientes* resultHead = NULL;
+	Clientes* resultTail = NULL;
+
+	// Percorrer a lista de Clientes
+	Clientes* current = head;
+	while (current != NULL) {
+		// Verificar se a localização coincide
+		if (strcmp(current->localizacao, location) == 0) {
+			// Criar um novo nó com a localização correspondente
+			Clientes* newNode = malloc(sizeof(Clientes));
+			strcpy(newNode->nome, current->nome);
+			newNode->contribuinte = current->contribuinte;
+			strcpy(newNode->utilizador, current->utilizador);
+			strcpy(newNode->password, current->password);
+			strcpy(newNode->morada, current->morada);
+			newNode->saldo = current->saldo;
+			strcpy(newNode->localizacao, current->localizacao);
+			newNode->next = NULL;
+
+			// Adicionar o novo nó à lista de resultados
+			if (resultHead == NULL) {
+				resultHead = newNode;
+				resultTail = newNode;
+			}
+			else {
+				resultTail->next = newNode;
+				resultTail = newNode;
+			}
+		}
+
+		// Avançar para o próximo nó
+		current = current->next;
+	}
+
+	return resultHead;
+}
+

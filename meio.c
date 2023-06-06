@@ -25,7 +25,7 @@ Meio* novoRegisto(Meio* comeco, int cod, char typ[], int auton, float charge, ch
 			}
 
 			// Caso o novo registro tenha que ser adicionado no começo da lista
-			if (charge < comeco->carga) {
+			if (charge > comeco->carga) {
 				novo->next = comeco;
 				comeco = novo;
 				return comeco;
@@ -45,8 +45,6 @@ Meio* novoRegisto(Meio* comeco, int cod, char typ[], int auton, float charge, ch
 
 	return comeco;
 }
-
-
 
 void listarRegisto(Meio* comeco) {
 	while (comeco != NULL)
@@ -103,7 +101,7 @@ Meio* lerMeios()
 	{
 		while (!feof(fp))
 		{
-			fscanf(fp, "%d;%[^;];%d;%f;%[^;]s;%d\n", &cod, tipo, &aut, &bat, local, &alug);
+			fscanf(fp, "%d;%[^;];%d;%f;%[^;];%d\n", &cod, tipo, &aut, &bat, local, &alug);
 			aux = novoRegisto(aux, cod, tipo, aut, bat, local, alug);
 		}
 		fclose(fp);
@@ -177,3 +175,58 @@ Meio* mudarAlugar(Meio* inicio, int cod) {
 	return NULL;
 }
 
+void listarMeiosPorLocalizacao(Meio* inicio) {
+	char local[100];
+	Meio* temp = inicio;
+	printf("Onde deseja procurar os meios disponiveis? ");
+	getchar();
+	fgets(local, 100, stdin);
+	local[strcspn(local, "\n")] = "\0";
+	int encontrou = 0;
+	while (temp != NULL) {
+		if (strcmp(temp->localizacao, local) == 0) {
+			printf("%d %s %d %.2f %s %d\n", temp->codigo, temp->tipo,
+				temp->autonomia, temp->carga, temp->localizacao, temp->alugada);
+			encontrou = 1;
+		}
+		temp = temp->next;
+	}
+	if (encontrou == 0) printf("Não foi encontrado nenhum meio nesta localizacao.\n");
+}
+
+Meio* searchLocationMean(Meio* head, const char* location) {
+	Meio* resultHead = NULL;
+	Meio* resultTail = NULL;
+
+	// Percorrer a lista de Meio
+	Meio* current = head;
+	while (current != NULL) {
+		// Verificar se a localização coincide
+		if (strcmp(current->localizacao, location) == 0) {
+			// Criar um novo nó com a localização correspondente
+			Meio* newNode = malloc(sizeof(Meio));
+			newNode->codigo = current->codigo;
+			strcpy(newNode->tipo, current->tipo);
+			newNode->autonomia = current->autonomia;
+			newNode->carga = current->carga;
+			strcpy(newNode->localizacao, current->localizacao);
+			newNode->alugada = current->alugada;
+			newNode->next = NULL;
+
+			// Adicionar o novo nó à lista de resultados
+			if (resultHead == NULL) {
+				resultHead = newNode;
+				resultTail = newNode;
+			}
+			else {
+				resultTail->next = newNode;
+				resultTail = newNode;
+			}
+		}
+
+		// Avançar para o próximo nó
+		current = current->next;
+	}
+
+	return resultHead;
+}

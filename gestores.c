@@ -55,35 +55,48 @@ int haGestor(Gestores* comeco, int cod) {
 	return(0);
 }
 
+int menuGestoresInicial() {
+	int choice;
+	printf("Bem vindo Gestor.\n");
+	printf("1-Faca Login.\n");
+	printf("2-Registe-se.\n");
+	printf("0-Sair\n");
+	scanf("%i", &choice);
+	return choice;
+}
+
 Gestores* menuGestores(Gestores* inicio, Clientes* comeco, Meio* inicial) {
 	int choice, cod, login;
 	char name[50], pass[12];
-	printf("----------------------------------------------\n");
-	printf("Tem registo?\tSim (1); Não (2)\n");
-	scanf("%i", &choice);
-	switch (choice) {
-	case 1:
+	do {
 		system("cls");
-		inicio = lerFicheiro();
-		login = loginGestores(inicio);
-		if (login == 1) inicio = Menu(inicio, comeco, inicial);
-		else printf("Login incorreto!");
-		break;
-	case 2:
-		getchar();
-		printf("\n Nome: ");
-		fgets(name, 50, stdin);
-		printf("\n Codigo de Identificação: ");
-		scanf("%i", &cod);
-		getchar();
-		printf("\nDefina a sua password: ");
-		fgets(pass, 12, stdin);
-		inicio = novoGestor(inicio, cod, name, pass);
-		break;
-	default:
-		printf("Opção invalida!");
-		return 0;
-	}
+		choice = menuGestoresInicial();
+		switch (choice) {
+		case 1:
+			system("cls");
+			login = loginGestores(inicio);
+			if (login == 1) inicio = Menu(inicio, comeco, inicial);
+			else printf("Login incorreto!");
+			break;
+		case 2:
+			getchar();
+			printf("\n Nome: ");
+			fgets(name, 50, stdin);
+			printf("\n Codigo de Identificação: ");
+			scanf("%i", &cod);
+			getchar();
+			printf("\nDefina a sua password: ");
+			fgets(pass, 12, stdin);
+			pass[strcspn(pass, "\n")] = '\0';
+			inicio = novoGestor(inicio, cod, name, pass);
+			break;
+		case 0:
+			break;
+		default:
+			printf("Opção invalida!");
+			break;
+		}
+	} while (choice != 0);
 	return inicio;
 }
 
@@ -172,6 +185,7 @@ int principalGestores(Gestores* comeco) {
 	printf("4-Adicionar meio novo\n");
 	printf("5-Remover meio através do codigo\n");
 	printf("6-Adicionar um novo gestor\n");
+	printf("7-Funcoes administrativas\n");
 	printf("0-Sair\n");
 	scanf("%d", &choice);
 	return choice;
@@ -239,6 +253,8 @@ Gestores* Menu(Gestores* inicio, Clientes* comeco, Meio* inicial) {
 			inicio = novoGestor(inicio, cod, type, loc);
 			guardarGestores(inicio);
 			break;
+		case 7:
+
 		case 0:
 			printf("Login out.");
 			break;
@@ -249,4 +265,19 @@ Gestores* Menu(Gestores* inicio, Clientes* comeco, Meio* inicial) {
 		}
 	} while (op != 0);
 	return (inicio);
+}
+
+int menuGrafos(){
+	int opcao;
+	printf("\n----- Menu de Trensportes -----\n");
+	printf("1. Exibir pontos de recolha\n");
+	printf("2. Adicionar ponto de recolha\n");
+	printf("3. Remover ponto de recolha\n");
+	printf("4. Exibir distâncias entre pontos de recolha\n");
+	printf("5. Fazer a recolha dos veiculos com menos de 50%\n");
+	printf("6. Adicionar estrada\n");
+	printf("7. Remover estrada\n");
+	printf("0. Sair\n");
+	printf("Opção: ");
+	scanf("%d", &opcao);
 }

@@ -1,7 +1,11 @@
+#ifndef _MEIO_H
+#define _MEIO_H
+
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct registo {
+
+typedef struct registo{
 	int codigo;
 	char tipo[25];
 	int autonomia;
@@ -22,3 +26,7 @@ void meiosDisponiveis(Meio* comeco);
 int guardarMeios(Meio* inicio);
 Meio* desalugar(Meio* inicio, int cod);
 Meio* mudarAlugar(Meio* inicio, int cod);
+void listarMeiosPorLocalizacao(Meio* inicio);
+Meio* searchLocationMean(Meio* head, const char* location);
+
+#endif
